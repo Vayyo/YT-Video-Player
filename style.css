@@ -1,0 +1,264 @@
+:root {
+  --text-font: min(3vw, 1.1rem);
+  --custom-size: min(4vw, 1.7rem);
+}
+*,
+*::before,
+*::after {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+body {
+  width: 100vw;
+  max-width: 100%;
+  min-height: 100vh;
+  background-color: #090420;
+  background-image: radial-gradient(circle, rgb(255, 255, 255), rgb(16, 5, 63));
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+.video-player {
+  position: relative;
+  width: 90%;
+  aspect-ratio: 16/9;
+  max-width: 700px;
+  margin-inline: auto;
+  border-radius: 0.3rem;
+  overflow: hidden;
+  background-color: black;
+  display: flex;
+}
+.video-player > video {
+  display: block;
+  width: 100%;
+}
+.video-player > .ui {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 0.5rem;
+  background-image: linear-gradient(to top, #000000b3, transparent);
+}
+.video-player .timeline-box {
+  width: 100%;
+  height: 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: pointer;
+}
+.video-player .timeline-box.seeking .timeline{
+  height: 100%;
+  border-radius: .5rem;
+}
+.video-player .timeline {
+  position: relative;
+  width: 100%;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.3);
+  -ms-touch-action: none;
+  touch-action: none; /*For smooth timeline sliding on mobile*/
+}
+.video-player .timeline > .buffered {
+  position: absolute;
+  width: 0%;
+  top: 0;
+  bottom: 0;
+  background-color: #fff;
+  border-radius: inherit;
+}
+.video-player .timeline > .progress {
+  position: absolute;
+  width: 0%;
+  max-width: 100%;
+  top: 0;
+  bottom: 0;
+  background-color: #1e69cb;
+}
+.video-player .timeline > .progress::before {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: 50%;
+  right: 0%;
+  background-color: #1e69cb;
+  border-radius: 50%;
+  -webkit-transform: translate(50%, -50%);
+  -ms-transform: translate(50%, -50%);
+  transform: translate(50%, -50%);
+}
+.video-player .timeline > .preview-box {
+  --cw: min(35%, 300px); /* --cw i.e custom width */
+  --hcw: calc(var(--cw) / 2); /* --hcw i.e half of custom width */
+  --offsetX: 0px; /*offsetX would be given by javascript*/
+  --min: 0%;
+  --max: calc(100% - var(--cw));/*did this to achieve right: 0% while using left: 100%*/
+  --fit: calc(var(--offsetX) - var(--hcw));/*did this so the preview box can be placed in the middle of the seeking thumb*/
+  position: absolute;
+  width: var(--cw);
+  bottom: 100%;
+  left: clamp(var(--min), var(--fit), var(--max));/*do not move out of container*/
+  -webkit-transform: translateY(-10%);
+  -ms-transform: translateY(-10%);
+  transform: translateY(-10%);
+  display: none;
+}
+.video-player .timeline > .preview-box > .preview-time {
+  color: #fff;
+  text-align: center;
+  margin-top: 1vmin;
+  font-size: var(--text-font);
+}
+.video-player .timeline > .preview-box > .preview {
+  background-color: black;
+  width: 100%;
+  display: block;
+  aspect-ratio: 16/9;
+}
+
+.video-player .controls {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  gap: min(2vw, 0.8rem);
+  padding-inline: 0.5rem;
+}
+.video-player .controls > .play-pause > .play-icon,
+.video-player .controls > .play-pause.paused > .pause-icon {
+  display: none;
+}
+.video-player .controls > .play-pause > .pause-icon,
+.video-player .controls > .play-pause.paused > .play-icon {
+  display: block;
+}
+.video-player .controls > .audio-controls {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+.video-player .controls > .audio-controls .hidden {
+  display: none;
+}
+.video-player .controls > .audio-controls > [data-audioIcon="muted"] > .audio-muted,
+.video-player .controls > .audio-controls > [data-audioIcon="low"] > .audio-low,
+.video-player .controls > .audio-controls > [data-audioIcon="high"] > .audio-high {
+  display: block;
+}
+.video-player .controls > .audio-controls > .volume {
+  width: 0;
+  -webkit-transform: scale(0);
+  -ms-transform: scale(0);
+  transform: scale(0);
+  -webkit-transform-origin: left;
+  -ms-transform-origin: left;
+  transform-origin: left;
+  -webkit-transition: width 200ms ease, -webkit-transform 200ms ease;
+  -o-transition: width 200ms ease, transform 200ms ease;
+  transition: width 200ms ease, transform 200ms ease;
+}
+.video-player .controls > .audio-controls:focus-within .volume,
+.video-player .controls > .audio-controls:hover .volume {
+  width: 3.5rem;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+}
+.video-player .controls > .duration {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  font-size: var(--text-font);
+  color: #fff;
+}
+.video-player .controls > .speed {
+  font-size: var(--text-font);
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+.video-player.theater-active {
+  width: 100%;
+  max-width: none;
+  max-height: 80vh;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  border-radius: 0;
+}
+.video-player .controls > .theater > .normal,
+.video-player.theater-active .controls > .theater > .wide {
+  display: block;
+}
+.video-player .controls > .theater > .wide,
+.video-player.theater-active .controls > .theater > .normal {
+  display: none;
+}
+.video-player .controls > .fullscreen > .open,
+.video-player .controls > .fullscreen.close > .close {
+  display: block;
+}
+.video-player .controls > .fullscreen > .close,
+.video-player .controls > .fullscreen.close > .open {
+  display: none;
+}
+.video-player .controls > .loop {
+  font-size: var(--text-font);
+}
+.video-player .controls > .loop.active {
+  color: #1e69cb;
+}
+
+/* Basically all icons in the video player */
+button {
+  width: var(--custom-size);
+  height: var(--custom-size);
+  color: white;
+  background-color: transparent;
+  border: none;
+}
+
+/* Input Range Styling */
+input[type="range"] {
+  -moz-appearance: none;
+  appearance: none;
+  -webkit-appearance: none;
+  height: var(--custom-size);
+  background-color: transparent;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 2px;
+  background-color: #fff;
+  border: none;
+  border-radius: 5px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+  position: relative; /*need this to use "top" styling*/
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #fff;
+  border-radius: 50%;
+}
